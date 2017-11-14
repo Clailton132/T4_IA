@@ -24,9 +24,7 @@ public class RemoteDriver {
         PrintWriter out = null;
         BufferedReader in = null;
         
-        String fclFile = "resources/fuzzyLogical.fcl";
-        FIS fis = FIS.load(fclFile);
-
+        Fuzzy fis = new Fuzzy();
 
         try {
             kkSocket = new Socket(host, port);
@@ -43,12 +41,8 @@ public class RemoteDriver {
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
         String fromServer;
         
-        FunctionBlock fb = fis.getFunctionBlock(null);
-    	JFuzzyChart.get().chart(fb);
-
         double x, y;
         double angle;
-        //Fuzzy fuzzy = new Fuzzy();
 
         // requisicao da posicao do caminhao
         out.println("r");
@@ -59,16 +53,10 @@ public class RemoteDriver {
         	angle = Double.valueOf(st.nextToken()).doubleValue();
         	
         	System.out.println("x: " + x + " y: " + y + " angle: " + angle);
-        	
-        	fis.setVariable("y", angle);
-    		fis.setVariable("x", x);
-    		
-    		// Evaluate
-    		fis.evaluate();
-    		
+
             /////////////////////////////////////////////////////////////////////////////////////
             // TODO sua lógica fuzzy vai aqui use os valores de x,y e angle obtidos. x e y estao em [0,1] e angulo [0,360)
-    		double respostaDaSuaLogica = fis.getVariable("angle").getValue(); // atribuir um valor entre -1 e 1 para virar o volante pra esquerda ou direita.
+    		double respostaDaSuaLogica = fis.evaluation(angle, x);
 
 
         	///////////////////////////////////////////////////////////////////////////////// Acaba sua modificacao aqui
@@ -78,8 +66,6 @@ public class RemoteDriver {
             // requisicao da posicao do caminhao
         	out.println("r");
         }
-        // Show output variable's chart
-		fb.getVariable("turn").defuzzify();
         
 		out.close();
         in.close();

@@ -10,30 +10,32 @@ VAR_OUTPUT
 END_VAR
 
 FUZZIFY x
-	TERM tooLeft  := (0.00, 1) (0.25, 0);
-	TERM left     := (0.20, 0) (0.32, 1) (0.45 , 0);
-	TERM center   := (0.40, 0) (0.52, 1) (0.65, 0);
-	TERM right    := (0.60, 0) (0.72, 1) (0.85 , 0);
-	TERM tooRight := (0.75, 0) (1   , 1);
+	TERM moreLeft := (0.00, 1) (0.3, 0);
+	TERM left := (0.15, 0) (0.32, 1) (0.5, 0);
+	TERM center := (0.32, 0) (0.5, 1) (0.68, 0);
+	TERM right := (0.5, 0) (0.7, 1) (0.9, 0);
+	TERM moreRight := (0.7, 0) (1, 1);
 END_FUZZIFY
 
 FUZZIFY y
-	TERM right := (0  , 1) (65 , 0) (295, 0) (360, 1);
-    TERM up    := (25 , 0) (90 , 1) (155, 0);	
-    TERM left  := (115, 0) (175, 1) (245, 0);
-    TERM down  := (205, 0) (265, 1) (335, 0);
+    TERM left  := (90, 0) (180, 1) (270, 0);
+    TERM right := (0, 1) (90, 0) (270, 0) (360, 1);
+    TERM center:= (0, 1) (90, 0);
+    TERM up    := (0, 0) (90, 1) (180, 0);
+    TERM down  := (180, 0) (270, 1) (360, 0);
 END_FUZZIFY
 
 /** Defuzzification **/
 /* Use 'Center Of Gravity' defuzzification method
  *
  */
+ 
 DEFUZZIFY angle
-    TERM tooLeft  := (-1  , 1) (-0.5, 0);
-    TERM left     := (-0.7, 0) (-0.4, 1) (-0.1, 0);
-    TERM center   := (-0.3, 0) (0   , 1) (0.3, 0);
-    TERM right    := (0.1 , 0) (0.4 , 1) (0.7, 0);
-    TERM tooRight := (0.5 , 0) (1   , 1);
+    TERM moreLeft  :=  (-1, 1) (-0.4, 0);
+    TERM left     := (-0.8, 0) (-0.6, 1) (0, 0);
+    TERM center   := (-0.3, 0) (0, 1) (0.3, 0);
+    TERM right    := (0, 0) (0.6, 1) (0.8, 0);
+    TERM moreRight := (0.4, 0) (1, 1);
    	METHOD : COG;
 	DEFAULT := 0;
 END_DEFUZZIFY
@@ -42,26 +44,31 @@ RULEBLOCK No1
 	AND : MIN;
 	ACT : MIN;
 
-	RULE  1: IF x IS tooLeft  AND y IS left  THEN angle IS tooLeft;
-    RULE  2: IF x IS tooLeft  AND y IS right THEN angle IS tooRight;
-    RULE  3: IF x IS tooLeft  AND y IS up    THEN angle IS right;
-    RULE  4: IF x IS tooLeft  AND y IS down  THEN angle IS tooRight;
-    RULE  5: IF x IS left     AND y IS left  THEN angle IS tooLeft;
-    RULE  6: IF x IS left     AND y IS right THEN angle IS right;
-    RULE  7: IF x IS left     AND y IS up    THEN angle IS right;
-    RULE  8: IF x IS left     AND y IS down  THEN angle IS tooLeft;
-    RULE  9: IF x IS center   AND y IS left  THEN angle IS tooLeft;
-    RULE 10: IF x IS center   AND y IS right THEN angle IS tooRight;
-    RULE 11: IF x IS center   AND y IS up    THEN angle IS center;
-    RULE 12: IF x IS center   AND y IS down  THEN angle IS tooLeft;
-    RULE 13: IF x IS right    AND y IS left  THEN angle IS left;
-    RULE 14: IF x IS right    AND y IS right THEN angle IS tooRight;
-    RULE 15: IF x IS right    AND y IS up    THEN angle IS left;
-    RULE 16: IF x IS right    AND y IS down  THEN angle IS tooRight;
-    RULE 17: IF x IS tooRight AND y IS left  THEN angle IS left;
-    RULE 18: IF x IS tooRight AND y IS right THEN angle IS tooRight;
-    RULE 19: IF x IS tooRight AND y IS up    THEN angle IS left;
-    RULE 20: IF x IS tooRight AND y IS down  THEN angle IS tooRight;
+	RULE 1: IF x IS right AND y IS left THEN angle IS left;
+    RULE 2: IF x IS right AND y IS right THEN angle IS moreRight;
+    RULE 3: IF x IS right AND y IS up THEN angle IS left;
+    RULE 4: IF x IS right AND y IS down THEN angle IS moreRight;
+    
+    RULE 5: IF x IS moreRight AND y IS left THEN angle IS left;
+    RULE 6: IF x IS moreRight AND y IS right THEN angle IS moreRight;
+    RULE 7: IF x IS moreRight AND y IS up THEN angle IS left;
+    RULE 8: IF x IS moreRight AND y IS down THEN angle IS moreRight;
+    
+    RULE 9: IF x IS center AND y IS left THEN angle IS moreLeft;
+    RULE 10: IF x IS center AND y IS right THEN angle IS moreRight;
+    RULE 11: IF x IS center AND y IS up THEN angle IS center;
+    RULE 12: IF x IS center AND y IS down THEN angle IS moreLeft;
+    
+	RULE 13: IF x IS moreLeft AND y IS left THEN angle IS moreLeft;
+    RULE 14: IF x IS moreLeft AND y IS right THEN angle IS moreRight;
+    RULE 15: IF x IS moreLeft AND y IS up THEN angle IS right;
+    RULE 16: IF x IS moreLeft AND y IS down THEN angle IS moreRight;
+    
+    RULE 17: IF x IS left AND y IS left THEN angle IS moreLeft;
+    RULE 18: IF x IS left AND y IS right THEN angle IS right;
+    RULE 19: IF x IS left AND y IS up THEN angle IS right;
+    RULE 20: IF x IS left AND y IS down THEN angle IS moreLeft;
+	
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK

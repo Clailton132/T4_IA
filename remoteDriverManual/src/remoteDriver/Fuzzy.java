@@ -11,7 +11,7 @@ class Fuzzy {
 	}
 	
 	double evaluation(double angle, double x) {
-		fis.setVariable("direction", angle);
+		fis.setVariable("y", angle);
 		fis.setVariable("x", x);
 		fis.evaluate();
         return fis.getVariable("angle").defuzzify();
